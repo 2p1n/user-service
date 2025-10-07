@@ -20,18 +20,18 @@ public class UserConfig {
 
         return args ->
         {
-            User dobrogi = new User(
-                    "Viktator",
-                    "viktator@gmail.com",
+            User test1 = new User(
+                    "DummyUser1",
+                    "DummyUser1@gmail.com",
                     LocalDate.of(1970, APRIL,1)
             );
-            User putinberenc = new User(
-                    "Putinberenc",
-                    "putinberenc@gmail.com",
-                    LocalDate.of(1970, APRIL,1)
+            User test2 = new User(
+                    "DummyUser2",
+                    "DummyUser2@gmail.com",
+                    LocalDate.of(2025, APRIL,1)
             );
             repository.saveAll(
-                    List.of(dobrogi,putinberenc)
+                    List.of(test1,test2)
             );
         };
 

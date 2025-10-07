@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     //SELECT * FROM user WHERE email = ?
-    @Query("SELECT u FROM User u WHERE u.email = ?1") // this can be commented out
+    //@Query("SELECT u FROM User u WHERE u.email = ?1") // this can be commented out
     Optional<User> findUserByEmail(String email);
+    boolean existsByEmail(String email);
 }

@@ -2,8 +2,9 @@ package com.LPC.user_service.controller;
 
 import com.LPC.user_service.model.User;
 import com.LPC.user_service.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +30,10 @@ public class UserController {
     }
 
     @PostMapping
-    public void registerNewUser(@RequestBody User user)
+    public ResponseEntity<?> registerNewUser(@Valid @RequestBody User user)
     {
         userService.addNewUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User has been successfully registered!");
     }
 
     @DeleteMapping(path = "{userId}")
@@ -43,7 +45,7 @@ public class UserController {
     @PutMapping(path = "{userId}")
     public ResponseEntity<User> updateUser(
             @PathVariable("userId") Long userId,
-            @RequestBody(required = false) User user)
+            @Valid @RequestBody(required = false) User user)
             //@RequestBody(required = false) String email) cant have 2 requestbody in one method
     {
         User updatedUser = userService.updateUser(userId, user);
