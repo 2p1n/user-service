@@ -11,7 +11,13 @@ import java.time.Period;
 
 //info about lombok https://projectlombok.org/features/
 @Entity //for hibernate
-@Table(name = "users") //table for db
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email") //better to handle integrity check on
+                // database level to avoid problems with possible duplicates on async requests
+        }
+) //table for db
 @Data
 //@AllArgsConstructor //constructor with all arguments
                     // !don't use it on entities with @GeneratedValue

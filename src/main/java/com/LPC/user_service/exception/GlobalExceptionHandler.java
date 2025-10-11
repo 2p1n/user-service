@@ -27,4 +27,12 @@ public class GlobalExceptionHandler {
     {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<Map<String,String>> handleDuplicateEmail(DuplicateEmailException ex)
+    {
+        Map<String,String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+    }
 }
