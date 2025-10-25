@@ -1,4 +1,4 @@
-package com.LPC.user_service.exception;
+package com.lpc.user.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
