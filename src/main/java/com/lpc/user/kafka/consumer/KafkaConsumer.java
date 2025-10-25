@@ -1,15 +1,13 @@
 package com.lpc.user.kafka.consumer;
 
 import com.lpc.upload.dto.FilePathEventDto;
-import com.lpc.user.model.User;
-import com.lpc.user.repository.UserRepository;
+
 import com.lpc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 
 @Slf4j
 @Service

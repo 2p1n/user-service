@@ -19,11 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor   // generates constructor for final fields
 public class UserService {
 
-
-    //@Value("${spring.kafka.topic.user-events:user-events}")
-    //private String userTopic;
-    private final KafkaProducer kafkaProducer;
-
     private final UserRepository userRepository;
 
     @GetMapping
@@ -41,7 +36,6 @@ public class UserService {
         log.debug("Attempting to add user to DB with email={}", user.getEmail());
         try{
             User savedUser = userRepository.save(user);
-            //kafkaProducer.sendMessage("user-events", savedUser.toString());
         } catch(DataIntegrityViolationException e) {
             log.error("Data integrity violation while trying to add new user with email={}" + user.getEmail(), e.getMessage(),e);
             throw new DuplicateEmailException("Email already in use: " + user.getEmail());
