@@ -1,17 +1,20 @@
 package com.LPC.user_service.service;
 
+import com.LPC.user_service.exception.DuplicateEmailException;
 import com.LPC.user_service.model.User;
 import com.LPC.user_service.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor   // generates constructor for final fields
 public class UserService {
@@ -26,24 +29,28 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No user found with id: " + id));
     }
 
     public void addNewUser(User user) {
-        Optional<User> userOptional =  userRepository.findUserByEmail(user.getEmail());
-        if(userOptional.isPresent())
-        {
-            throw new IllegalStateException("email already taken");
+        log.debug("Attempting to add user to DB with email={}", user.getEmail());
+        try{
+            userRepository.save(user);
+        } catch(DataIntegrityViolationException e) {
+            log.error("Data integrity violation while trying to add new user with email={}" + user.getEmail(), e.getMessage(),e);
+            throw new DuplicateEmailException("Email already in use: " + user.getEmail());
+        } catch(Exception e) {
+            log.error("Unexpected error while trying to add new user" + e.getMessage(),e);
+            throw e;
         }
-        userRepository.save(user);
     }
 
     public void deleteUser(Long userId)
     {
-        boolean exists = userRepository.existsById(userId);
-        if(!exists)
+        if(!userRepository.existsById(userId))
         {
-            throw new IllegalStateException("user with id " + userId + " doesn't exist");
+            log.error("User with id: " + userId + " does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user found with id: " + userId);
         }
         userRepository.deleteById(userId);
     }
@@ -51,27 +58,18 @@ public class UserService {
     @Transactional
     public User updateUser(Long userId, User user) {
         User userToUpdate = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException(
-                        "user with id " + userId + " doesn't exist"));
-        //validation into a diff method
-        if (user.getName() != null && !user.getName().isEmpty()
-                && !Objects.equals(userToUpdate.getName(), user.getName())) {
-            userToUpdate.setName(user.getName());
-        }
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No user found with id: " + userId));
 
-        if (user.getEmail() != null && !user.getEmail().isEmpty()
-                && !Objects.equals(userToUpdate.getEmail(), user.getEmail())) {
-            Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
-            if (userOptional.isPresent()) {
-                throw new IllegalStateException("email already taken");
-            }
-            userToUpdate.setEmail(user.getEmail());
-        }
-
-        if (user.getDateOfBirth() != null && !Objects.equals(userToUpdate.getDateOfBirth(), user.getDateOfBirth())) {
-            userToUpdate.setAge(user.getAge());
-        }
+        applyUserUpdate(userToUpdate, user);
 
         return userRepository.save(userToUpdate);
+    }
+
+    public void applyUserUpdate(User target, User source)
+    {
+        target.setEmail(source.getEmail());
+        target.setName(source.getName());
+        target.setDateOfBirth(source.getDateOfBirth());
     }
 }

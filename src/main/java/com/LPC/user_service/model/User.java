@@ -1,15 +1,23 @@
 package com.LPC.user_service.model;
 
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Period;
 
-
+//info about lombok https://projectlombok.org/features/
 @Entity //for hibernate
-@Table(name = "users") //table for db
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email") //better to handle integrity check on
+                // database level to avoid problems with possible duplicates on async requests
+        }
+) //table for db
 @Data
 //@AllArgsConstructor //constructor with all arguments
                     // !don't use it on entities with @GeneratedValue
@@ -31,9 +39,18 @@ public class User
             generator = "user_sequence"
     )
     private Long id;
+
+    @NotBlank(message = "Username cannot be blank!")
+    @Size(min = 2,max = 30, message = "Given name's length must be between 2 and 30 characters!")
     private String name;
+
+    @Email(message = "Email has to be valid!")
+    @NotBlank
     private String email;
+
+    @NotNull(message = "Date of birth is required!")
     private LocalDate dateOfBirth;
+
     @Transient// no need for a column in db, calculate it instead
     private Integer age;
 
@@ -52,6 +69,7 @@ public class User
     public void setAge(Integer age) {
         this.age = age;
     }
+
 
 
 }
