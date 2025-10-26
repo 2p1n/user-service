@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumer {
     private final UserService userService;
 
-    @KafkaListener(topics = "test-events", groupId = "test-group")
+    @KafkaListener(topics = "${spring.kafka.topics.test-events}", groupId = "${spring.kafka.groups.test-group}")
     public void listen(FilePathEventDto event){
-        log.debug("Kafka event");
+        log.debug("Kafka event: {}", event);
         userService.updateUserFilePath(event.getId(), event.getFilePath());
     }
 }

@@ -27,6 +27,11 @@ spring:
     bootstrap-servers: localhost:9092
     admin.auto-create: true
 
+    topics:
+      test-events: test-events
+    groups:
+      test-group: test-group
+
     producer.key-serializer: org.apache.kafka.common.serialization.StringSerializer
     producer.value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
