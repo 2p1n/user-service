@@ -1,4 +1,4 @@
-package com.LPC.user_service.exception;
+package com.lpc.user.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
         Map<String,String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        //return ResponseEntity.badRequest().body(errors);
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

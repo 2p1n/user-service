@@ -1,6 +1,6 @@
-package com.LPC.user_service.repository;
+package com.lpc.user.repository;
 
-import com.LPC.user_service.model.User;
+import com.lpc.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

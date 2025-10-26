@@ -14,6 +14,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - user_service_network
   user_service:
     build: .
     container_name: user_service_container
@@ -24,10 +26,17 @@ services:
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      #SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8080:8080"
     depends_on:
       - postgres
+    networks:
+      - user_service_network
 #volumes keeps the data between restarts
 volumes:
   postgres_data:
+
+networks:
+  user_service_network:
+    external: true

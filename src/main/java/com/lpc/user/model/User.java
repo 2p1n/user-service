@@ -1,4 +1,4 @@
-package com.LPC.user_service.model;
+package com.lpc.user.model;
 
 
 import jakarta.persistence.*;
@@ -54,12 +54,21 @@ public class User
     @Transient// no need for a column in db, calculate it instead
     private Integer age;
 
+    private String filePath;
+
 
     public User(String name, String email, LocalDate dateOfBirth) {
         this.name = name;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
     }
+    public User(String name, String email, LocalDate dateOfBirth, String filePath) {
+        this.name = name;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.filePath = filePath;
+    }
+
 
 
     public Integer getAge() {

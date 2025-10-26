@@ -1,8 +1,8 @@
-package com.LPC.user_service.service;
-
-import com.LPC.user_service.exception.DuplicateEmailException;
-import com.LPC.user_service.model.User;
-import com.LPC.user_service.repository.UserRepository;
+package com.lpc.user.service;
+import com.lpc.user.exception.DuplicateEmailException;
+import com.lpc.user.kafka.producer.KafkaProducer;
+import com.lpc.user.model.User;
+import com.lpc.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class UserService {
     public void addNewUser(User user) {
         log.debug("Attempting to add user to DB with email={}", user.getEmail());
         try{
-            userRepository.save(user);
+            User savedUser = userRepository.save(user);
         } catch(DataIntegrityViolationException e) {
             log.error("Data integrity violation while trying to add new user with email={}" + user.getEmail(), e.getMessage(),e);
             throw new DuplicateEmailException("Email already in use: " + user.getEmail());
@@ -71,5 +71,18 @@ public class UserService {
         target.setEmail(source.getEmail());
         target.setName(source.getName());
         target.setDateOfBirth(source.getDateOfBirth());
+        target.setFilePath(source.getFilePath());
+    }
+
+    @Transactional
+    public User updateUserFilePath(Long userId, String filePath)
+    {
+        log.debug("Attempting to update filePath with id={}", userId + "from event");
+        User userToUpdate = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No user found with id: " + userId));
+        userToUpdate.setFilePath(filePath);
+        log.debug("filePath updated in user with id={}", userId);
+        return userRepository.save(userToUpdate);
     }
 }
